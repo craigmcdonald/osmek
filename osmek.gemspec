@@ -5,16 +5,21 @@ require 'osmek/version'
 
 Gem::Specification.new do |gem|
   gem.name          = "osmek"
-  gem.version       = Osmek::VERSION
+  gem.version       = Osmek::Version
   gem.platform      = Gem::Platform::RUBY
   gem.authors       = ["Michele Gerarduzzi"]
   gem.email         = ["michele.gerarduzzi@gmail.com"]
-  gem.description   = %q{Ruby library for Osmek Content APIs}
-  gem.summary       = %q{Ruby library for Osmek Content APIs}
+  gem.description   = %q{A Ruby interface to the Osmek API.}
+  gem.summary       = gem.description
   gem.homepage      = "http://github.com/michelegera/osmek"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
+
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'rspec'
+
+  gem.add_dependency 'faraday', '~> 0.8'
 end

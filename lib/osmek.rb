@@ -1,5 +1,9 @@
-require "osmek/version"
+require 'osmek/version'
+require 'osmek/configuration'
+require 'osmek/client'
 
 module Osmek
-  # Your code goes here...
+
+  extend Configuration
+
 end
