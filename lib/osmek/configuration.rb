@@ -1,8 +1,12 @@
 module Osmek
   module Configuration
-    VALID_CONFIG_KEYS      = [:api_key].freeze
+    VALID_CONNECTION_KEYS  = [:endpoint, :api_version, :user_agent, :method].freeze
+    VALID_OPTIONS_KEYS     = [:api_key, :format].freeze
+    VALID_CONFIG_KEYS      = VALID_CONNECTION_KEYS + VALID_OPTIONS_KEYS
 
+    # TODO Split endpoint into protocol and hostname
     DEFAULT_ENDPOINT       = 'http://api.osmek.com/'
+    DEFAULT_API_VERSION    = nil
     DEFAULT_USER_AGENT     = "Osmek API Ruby Gem #{Osmek::Version}".freeze
     DEFAULT_METHOD         = :post
 
@@ -20,6 +24,7 @@ module Osmek
 
     def reset
       self.endpoint       = DEFAULT_ENDPOINT
+      self.api_version    = DEFAULT_API_VERSION
       self.user_agent     = DEFAULT_USER_AGENT
       self.method         = DEFAULT_METHOD
 

@@ -22,4 +22,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec'
 
   gem.add_dependency 'faraday', '~> 0.8'
+  gem.add_dependency 'system_timer', '~> 1.2.4'
+  gem.add_dependency 'oj', '~> 1.4.0'
 end
