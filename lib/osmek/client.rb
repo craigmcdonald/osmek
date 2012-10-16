@@ -1,5 +1,5 @@
 require 'faraday'
-require 'oj'
+require 'yajl'
 
 module Osmek
   class Client
@@ -21,8 +21,8 @@ module Osmek
       URI.parse("#{Osmek.endpoint}#{Osmek.api_version}#{path}")
     end
 
-    def prepare_request(uri)
-      Faraday.new(:url => uri) do |conn|
+    def api_request
+      Faraday.new do |conn|
         conn.request  :url_encoded             # form-encode POST params
         conn.response :logger                  # log requests to STDOUT
         conn.adapter  Faraday.default_adapter  # make requests with Net::HTTP
@@ -32,9 +32,8 @@ module Osmek
     # Returns information about the account, including a list of content bins
     def account_info
       uri = build_uri('/feed/account_info')
-      request = prepare_request(uri)
-      response = request.post
-      parsed_response = Oj.dump(response.body)
+      response = api_request.post uri, { :api_key => api_key }
+      parsed_response = Yajl::Parser.parse(response.body)
     end
   end
 end
