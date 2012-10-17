@@ -14,6 +14,8 @@ module Osmek
       Configuration::VALID_CONFIG_KEYS.each do |key|
         send("#{key}=", merged_options[key])
       end
+
+      raise "No API key provided" if api_key.nil?
     end
 
     # Returns a parsed URI object
@@ -33,7 +35,7 @@ module Osmek
     def account_info
       uri = build_uri('/feed/account_info')
       request = prepare_request(uri)
-      response = request.post
+      response = request.post(:body => {:api_key => api_key})
       parsed_response = Oj.dump(response.body)
     end
   end

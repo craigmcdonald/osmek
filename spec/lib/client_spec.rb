@@ -19,11 +19,16 @@ describe Osmek::Client do
       Osmek.reset
     end
 
-    it "should inherit default configuration" do
+    it "inherits default configuration" do
       client = Osmek::Client.new
       @keys.each do |key|
         client.send(key).should eq key
       end
     end
+  end
+
+  it "raises an exception if no API key is set" do
+    config = {:api_key => nil}
+    expect { Osmek::Client.new(config) }.to raise_exception "No API key provided"
   end
 end

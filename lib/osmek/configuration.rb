@@ -9,7 +9,6 @@ module Osmek
     DEFAULT_API_VERSION    = nil
     DEFAULT_USER_AGENT     = "Osmek API Ruby Gem #{Osmek::Version}".freeze
     DEFAULT_METHOD         = :post
-
     DEFAULT_API_KEY        = nil
     DEFAULT_FORMAT         = :json
 
@@ -27,7 +26,6 @@ module Osmek
       self.api_version    = DEFAULT_API_VERSION
       self.user_agent     = DEFAULT_USER_AGENT
       self.method         = DEFAULT_METHOD
-
       self.api_key        = DEFAULT_API_KEY
       self.format         = DEFAULT_FORMAT
     end
