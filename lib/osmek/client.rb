@@ -1,5 +1,6 @@
 require 'faraday'
 require 'yajl'
+require 'hashie'
 
 module Osmek
   class Client
@@ -26,17 +27,24 @@ module Osmek
     def api_request
       Faraday.new do |conn|
         conn.request  :url_encoded             # form-encode POST params
-        conn.response :logger                  # log requests to STDOUT
         conn.adapter  Faraday.default_adapter  # make requests with Net::HTTP
       end
     end
 
     # Returns information about the account, including a list of content bins
     def account_info
-      uri = build_uri('/feed/account_info')
-      api_request = prepare_request(uri)
-      response = api_request.post uri, { :api_key => api_key }
+      uri = build_uri('feed/account_info')
+      response = api_request.post uri, { api_key: api_key }
       parsed_response = Yajl::Parser.parse(response.body)
+      Hashie::Mash.new(parsed_response)
+    end
+
+    # This method validate an Osmek user's credentials.
+    def check_login(options = {})
+      uri = build_uri('check_login')
+      response = api_request.post uri, { api_key: api_key, username: options[:username], password: options[:password] }
+      parsed_response = Yajl::Parser.parse(response.body)
+      Hashie::Mash.new(parsed_response)
     end
   end
 end

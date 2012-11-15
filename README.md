@@ -24,6 +24,15 @@ Or install it yourself as:
 
 ## Contributing
 
+To run tests, you will need to set some environment varaibles like `API_KEY`, `USERNAME` and `PASSWORD`.
+You can do that by creating a `.env` file in the root of the project with this content:
+
+```
+API_KEY=<your_api_key>
+USERNAME=<your_email_address>
+PASSWORD=<your_password_and_account_id_as_an_md5_hash>
+```
+
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)

@@ -20,7 +20,9 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'dotenv'
 
   gem.add_dependency 'faraday', '~> 0.8'
-  gem.add_dependency 'yajl-ruby', '~> 1.1.0'
+  gem.add_dependency 'yajl-ruby', '~> 1.1'
+  gem.add_dependency 'hashie', '~> 1.2'
 end
