@@ -1,6 +1,5 @@
-require 'faraday'
-require 'yajl'
-require 'hashie'
+require 'osmek/uri'
+require 'osmek/request'
 
 module Osmek
   class Client
@@ -19,32 +18,39 @@ module Osmek
       raise "No API key provided" if api_key.nil?
     end
 
-    # Returns a parsed URI object
-    def build_uri(path)
-      URI.parse("#{Osmek.endpoint}#{Osmek.api_version}#{path}")
+    def default_params
+      { api_key: api_key }
     end
 
-    def api_request
-      Faraday.new do |conn|
-        conn.request  :url_encoded             # form-encode POST params
-        conn.adapter  Faraday.default_adapter  # make requests with Net::HTTP
-      end
-    end
+    # API calls
 
     # Returns information about the account, including a list of content bins
     def account_info
-      uri = build_uri('feed/account_info')
-      response = api_request.post uri, { api_key: api_key }
-      parsed_response = Yajl::Parser.parse(response.body)
-      Hashie::Mash.new(parsed_response)
+      uri = Osmek::Uri.new('feed/account_info')
+      request = Osmek::Request.new(uri, default_params)
+      request.perform
     end
 
     # This method validate an Osmek user's credentials.
-    def check_login(options = {})
-      uri = build_uri('check_login')
-      response = api_request.post uri, { api_key: api_key, username: options[:username], password: options[:password] }
-      parsed_response = Yajl::Parser.parse(response.body)
-      Hashie::Mash.new(parsed_response)
+    def check_login(params = {})
+      merged_params = default_params.merge(params)
+      uri = Osmek::Uri.new('check_login')
+      request = Osmek::Request.new(uri, merged_params)
+      request.perform
+    end
+
+    def section_info(params = {})
+      merged_params = default_params.merge(params)
+      uri = Osmek::Uri.new('feed/section_info')
+      request = Osmek::Request.new(uri, merged_params)
+      request.perform
+    end
+
+    def comments(params = {})
+      merged_params = default_params.merge(params)
+      uri = Osmek::Uri.new('feed/comments')
+      request = Osmek::Request.new(uri, merged_params)
+      request.perform
     end
   end
 end

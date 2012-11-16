@@ -29,16 +29,19 @@ describe Osmek::Client do
   end
 
   it "should raise an exception if no API key is set" do
-    config = {api_key: nil}
-    expect { Osmek::Client.new(config) }.to raise_exception "No API key provided"
+    params = {api_key: nil}
+    expect { Osmek::Client.new(params) }.to raise_exception "No API key provided"
   end
 
   # TODO Use https://github.com/myronmarston/vcr instead
 
   describe 'API calls' do
     before do
-      config = {api_key: ENV['API_KEY']}
-      @client = Osmek::Client.new(config)
+      @params = {
+        username: ENV['USERNAME'],
+        password: ENV['PASSWORD']
+      }
+      @client = Osmek::Client.new(api_key: ENV['API_KEY'])
     end
 
     after do
@@ -48,48 +51,99 @@ describe Osmek::Client do
     describe '.account_info' do
       before { @response = @client.account_info }
       subject { @response }
+
       it { should respond_to(:id) }
-      it { should respond_to(:email) }
     end
 
     describe '.check_login' do
       context 'with valid user' do
-        before do
-          @response = @client.check_login(
-            username: ENV['USERNAME'],
-            password: ENV['PASSWORD']
-          )
-        end
+        before { @response = @client.check_login(@params) }
         subject { @response }
+
         its(:status) { should eq 'ok' }
-        its(:msg) { should eq 'User validated' }
         its(:token) { should be_nil }
       end
 
       context 'with invalid user' do
-        before do
-          @response = @client.check_login(
-            username: ENV['USERNAME'],
-            password: 'invalid'
-          )
-        end
+        before { @response = @client.check_login(@params.merge(password: 'invalid')) }
         subject { @response }
+
         its(:status) { should eq 'fail' }
-        its(:msg) { should eq 'Invalid username or password' }
       end
 
       context 'with return_token' do
-        before do
-          @response = @client.check_login(
-            username: ENV['USERNAME'],
-            password: ENV['PASSWORD'],
-            return_token: true
-          )
-        end
+        before { @response = @client.check_login(@params.merge(return_token: true)) }
         subject { @response }
+
         its(:status) { should eq 'ok' }
-        its(:msg) { should eq 'User validated' }
         it { should respond_to(:token) }
+      end
+    end
+
+    describe '.section_info' do
+      context 'with empty params' do
+        before { @response = @client.section_info }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with wrong section_id' do
+        before { @response = @client.section_info(section_id: 0000) }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with correct section_id' do
+        before { @response = @client.section_info(section_id: ENV['SECTION_ID']) }
+        subject { @response }
+
+        it { should respond_to(:id) }
+      end
+    end
+
+    describe '.comments' do
+      context 'with empty params' do
+        before { @response = @client.comments }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with wrong section_id' do
+        before { @response = @client.comments(section_id: 0000) }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with just section_id' do
+        before { @response = @client.comments(section_id: ENV['SECTION_ID']) }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with section_id and wrong item_id' do
+        before { @response = @client.comments(
+          section_id: ENV['SECTION_ID'],
+          item_id: 0000
+        ) }
+        subject { @response }
+
+        it { should respond_to(:items) }
+        its(:items) { should be_empty }
+      end
+
+      context 'with section_id and item_id' do
+        before { @response = @client.comments(
+          section_id: ENV['SECTION_ID'],
+          item_id: ENV['ITEM_ID']
+        ) }
+        subject { @response }
+
+        it { should respond_to(:items) }
       end
     end
 
