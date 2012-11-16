@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'yajl'
 
-describe Osmek::Client do
+describe do
 
   before do
     @keys = Osmek::Configuration::VALID_CONFIG_KEYS
@@ -35,7 +35,7 @@ describe Osmek::Client do
 
   # TODO Use https://github.com/myronmarston/vcr instead
 
-  describe 'API calls' do
+  describe do
     before do
       @params = {
         username: ENV['USERNAME'],
@@ -55,6 +55,7 @@ describe Osmek::Client do
       it { should respond_to(:id) }
     end
 
+    # .check_login
     describe '.check_login' do
       context 'with valid user' do
         before { @response = @client.check_login(@params) }
@@ -80,6 +81,7 @@ describe Osmek::Client do
       end
     end
 
+    # .section_info
     describe '.section_info' do
       context 'with empty params' do
         before { @response = @client.section_info }
@@ -103,6 +105,7 @@ describe Osmek::Client do
       end
     end
 
+    # .comments
     describe '.comments' do
       context 'with empty params' do
         before { @response = @client.comments }
@@ -119,7 +122,7 @@ describe Osmek::Client do
       end
 
       context 'with just section_id' do
-        before { @response = @client.comments(section_id: ENV['SECTION_ID']) }
+        before { @response = @client.comments(section_id: ENV['SECTION_WITH_COMMENTS_ID']) }
         subject { @response }
 
         its(:status) { should eq 'fail' }
@@ -127,25 +130,159 @@ describe Osmek::Client do
 
       context 'with section_id and wrong item_id' do
         before { @response = @client.comments(
-          section_id: ENV['SECTION_ID'],
-          item_id: 0000
+          section_id: ENV['SECTION_WITH_COMMENTS_ID'],
+          item_id: '0000'
         ) }
         subject { @response }
 
-        it { should respond_to(:items) }
         its(:items) { should be_empty }
       end
 
-      context 'with section_id and item_id' do
+      context 'with section_id and item_id without comments' do
         before { @response = @client.comments(
           section_id: ENV['SECTION_ID'],
           item_id: ENV['ITEM_ID']
         ) }
         subject { @response }
 
-        it { should respond_to(:items) }
+        its(:items) { should be_empty }
+      end
+
+      context 'with section_id and item_id with comments', broken: true do
+        before { @response = @client.comments(
+          section_id: ENV['SECTION_WITH_COMMENTS_ID'],
+          item_id: ENV['ITEM_WITH_COMMENTS_ID']
+        ) }
+        subject { @response }
+
+        its(:items) { should_not be_empty }
       end
     end
 
+    # .make_comment
+    describe '.make_comment' do
+      context 'with empty params' do
+        before { @response = @client.make_comment }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with section_id' do
+        before { @response = @client.make_comment(section_id: ENV['SECTION_WITH_COMMENTS_ID']) }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with section_id and wrong item_id', broken: true do
+        before { @response = @client.comments(
+          section_id: ENV['SECTION_WITH_COMMENTS_ID'],
+          item_id: 0000
+        ) }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with section_id and item_id', broken: true do
+        before { @response = @client.comments(
+          section_id: ENV['SECTION_WITH_COMMENTS_ID'],
+          item_id: ENV['ITEM_WITH_COMMENTS_ID']
+        ) }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with section_id, item_id and email', broken: true do
+        before do
+          @response = @client.comments(
+            section_id: ENV['SECTION_WITH_COMMENTS_ID'],
+            item_id: ENV['ITEM_WITH_COMMENTS_ID'],
+            email: 'foobar@example.org'
+          )
+        end
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with section_id, item_id, email and comment', broken: true do
+        before do
+          @response = @client.comments(
+            section_id: ENV['SECTION_WITH_COMMENTS_ID'],
+            item_id: ENV['ITEM_WITH_COMMENTS_ID'],
+            email: 'foobar@example.org',
+            comment: 'Lorem ipsum, sit amet!'
+          )
+        end
+        subject { @response }
+
+        its(:status) { should eq 'ok' }
+        it 'should return the request email in the comment' do
+          subject.stub_chain(:comment, :email).and_return('foobar@example.org')
+          subject.comment.email.should eq 'foobar@example.org'
+        end
+      end
+    end
+
+    # .log
+    describe '.log' do
+      context 'with empty params' do
+        before { @response = @client.log }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with section_id' do
+        before { @response = @client.log(section_id: ENV['SECTION_ID']) }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with section_id and title' do
+        before do
+          @response = @client.log(
+            section_id: ENV['SECTION_WITH_COMMENTS_ID'],
+            title: 'Foobar'
+          )
+        end
+        subject { @response }
+
+        its(:status) { should eq 'ok' }
+      end
+    end
+
+    # .subscribe
+    describe '.subscribe' do
+      context 'with empty params', broken: true do
+        before { @response = @client.subscribe }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with section_id', broken: true do
+        before { @response = @client.subscribe(section_id: ENV['SECTION_ID']) }
+        subject { @response }
+
+        its(:status) { should eq 'fail' }
+      end
+
+      context 'with section_id and email', broken: true do
+        before do
+          @response = @client.subscribe(
+            section_id: ENV['SECTION_WITH_COMMENTS_ID'],
+            email: 'foobar@example.org'
+          )
+        end
+        subject { @response }
+
+        its(:status) { should eq 'ok' }
+      end
+    end
   end
 end

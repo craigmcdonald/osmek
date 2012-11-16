@@ -31,7 +31,7 @@ module Osmek
       request.perform
     end
 
-    # This method validate an Osmek user's credentials.
+    # Validates an Osmek user's credentials.
     def check_login(params = {})
       merged_params = default_params.merge(params)
       uri = Osmek::Uri.new('check_login')
@@ -39,6 +39,7 @@ module Osmek
       request.perform
     end
 
+    # Returns information about a content bin
     def section_info(params = {})
       merged_params = default_params.merge(params)
       uri = Osmek::Uri.new('feed/section_info')
@@ -46,9 +47,26 @@ module Osmek
       request.perform
     end
 
+    # Works just like the feed method, but returns comments for an item
     def comments(params = {})
       merged_params = default_params.merge(params)
       uri = Osmek::Uri.new('feed/comments')
+      request = Osmek::Request.new(uri, merged_params)
+      request.perform
+    end
+
+    # Allows you to add a comment to an item
+    def make_comment(params = {})
+      merged_params = default_params.merge(params)
+      uri = Osmek::Uri.new('make_comment')
+      request = Osmek::Request.new(uri, merged_params)
+      request.perform
+    end
+
+    # Allows you to add a comment to an item
+    def log(params = {})
+      merged_params = default_params.merge(params)
+      uri = Osmek::Uri.new('log')
       request = Osmek::Request.new(uri, merged_params)
       request.perform
     end
