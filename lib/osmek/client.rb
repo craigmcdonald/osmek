@@ -23,6 +23,13 @@ module Osmek
     end
 
     # API calls
+    
+     def feed(params={})
+      merged_params = default_params.merge(params)
+      uri = Osmek::Uri.new('feed')
+      request = Osmek::Request.new(uri, merged_params)
+      request.perform
+    end
 
     # Returns information about the account, including a list of content bins
     def account_info
