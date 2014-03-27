@@ -7,7 +7,7 @@ module Osmek
     # TODO Split endpoint into protocol and hostname
     DEFAULT_ENDPOINT       = 'http://api.osmek.com/'
     DEFAULT_API_VERSION    = nil
-    DEFAULT_USER_AGENT     = "Osmek API Ruby Gem #{Osmek::Version}".freeze
+    DEFAULT_USER_AGENT     = "Osmek API Ruby Gem #{Osmek::VERSION}".freeze
     DEFAULT_METHOD         = :post
     DEFAULT_API_KEY        = nil
     DEFAULT_FORMAT         = :json
