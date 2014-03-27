@@ -5,7 +5,7 @@ require 'osmek/version'
 
 Gem::Specification.new do |gem|
   gem.name          = "osmek"
-  gem.version       = Osmek::Version
+  gem.version       = Osmek::VERSION
   gem.platform      = Gem::Platform::RUBY
   gem.authors       = ["Michele Gerarduzzi"]
   gem.email         = ["michele.gerarduzzi@gmail.com"]
