@@ -2,8 +2,10 @@ require 'osmek/version'
 require 'osmek/configuration'
 require 'osmek/client'
 
-require 'dotenv'
-Dotenv.load
+if Rails.env.development?
+  require 'dotenv'
+  Dotenv.load
+end
 
 module Osmek
 
